@@ -1,7 +1,7 @@
 pub mod read;
 
 use std::{fs, io::Result};
-use read::{read_byte, read_integer, read_string, read_short, read_long};
+use read::{read_byte, read_string, read_int};
 
 #[allow(dead_code)]
 #[derive(Debug, Default)]
@@ -42,31 +42,31 @@ impl Replay {
         let p_ref = &mut p;
     
         self.gamemode = read_byte(p_ref, &content);
-        self.version = read_integer(p_ref, &content);
+        self.version = read_int!(u32, p_ref, &content);
         self.beatmap_md5 = read_string(p_ref, &mut content).unwrap_or("Can't read beatmap md5!".to_string());
         self.username = read_string(p_ref, &mut content).unwrap_or("Can't read username!".to_string());
         self.replay_md5 = read_string(p_ref, &mut content).unwrap_or("Can't read replay md5!".to_string());
-        self.n300 = read_short(p_ref, &content);
-        self.n100 = read_short(p_ref, &content);
-        self.n50 = read_short(p_ref, &content);
-        self.geki = read_short(p_ref, &content);
-        self.katu = read_short(p_ref, &content);
-        self.misses = read_short(p_ref, &content);
-        self.score = read_integer(p_ref, &content);
-        self.combo = read_short(p_ref, &content);
+        self.n300 = read_int!(u16, p_ref, &content);
+        self.n100 = read_int!(u16, p_ref, &content);
+        self.n50 = read_int!(u16, p_ref, &content);
+        self.geki = read_int!(u16, p_ref, &content);
+        self.katu = read_int!(u16, p_ref, &content);
+        self.misses = read_int!(u16, p_ref, &content);
+        self.score = read_int!(u32, p_ref, &content);
+        self.combo = read_int!(u16, p_ref, &content);
         self.perfect = read_byte(p_ref, &content);
-        self.mods = read_integer(p_ref, &content);
+        self.mods = read_int!(u32, p_ref,  &content);
         self.life_bar = read_string(p_ref, &mut content).unwrap_or("".to_string());
-        self.time_stamp = read_long(p_ref, &content);
-        self.replay_length = read_integer(p_ref, &content);
+        self.time_stamp = read_int!(usize, p_ref, &content);
+        self.replay_length = read_int!(u32, p_ref, &content);
 
         self.replay_data = content[*p_ref..(self.replay_length as usize)].to_vec();
         *p_ref += self.replay_length as usize;
 
-        self.score_id = read_long(p_ref, &content);
+        self.score_id = read_int!(usize, p_ref, &content);
         
         if *p_ref != content.len() {
-            self.mod_info = Some(read_long(p_ref, &content) as f64);
+            self.mod_info = Some(read_int!(usize, p_ref, &content) as f64);
         }
 
         self.raw = content;
@@ -88,6 +88,6 @@ mod tests {
         let mut replay = Replay::new();
         replay.read("./replay.osr").unwrap();
 
-        println!("{:?} - {:?}", replay.score_id, now.elapsed());
+        println!("{:?} - {:?}", replay.n300, now.elapsed());
     }
 }

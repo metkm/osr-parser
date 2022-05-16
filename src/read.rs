@@ -1,48 +1,27 @@
-use std::string::FromUtf8Error;
+use std::{string::FromUtf8Error};
+
+macro_rules! read_int {
+    ($t: ty, $p: expr, $buff: expr) => {{
+        let size = std::mem::size_of::<$t>();
+        
+        let mut offset = 0;
+        let mut total: $t = 0;
+
+        for _ in 0..size {
+            total |= (read_byte($p, $buff) as $t) << offset;
+            offset += 8;
+        }
+
+        total 
+    }};
+}
+
+pub(crate) use read_int;
 
 pub fn read_byte(p: &mut usize, buff: &[u8]) -> u8 {
     let byte = buff[*p];
     *p += 1;
     byte
-}
-
-// 4 byte little endian value.
-pub fn read_integer(p: &mut usize, buff: &[u8]) -> u32 {
-    let mut val: u32 = 0;
-
-    let mut offset = 0;
-    for _ in 0..4 {
-        val |= (read_byte(p, buff) as u32) << offset;
-        offset += 8;
-    }
-
-    val
-}
-
-pub fn read_short(p: &mut usize, buff: &[u8]) -> u16 {
-    let mut val: u16 = 0;
-
-    let mut offset = 0;
-    for _ in 0..2 {
-        val |= (read_byte(p, buff) as u16) << offset;
-        offset += 8;
-    }
-
-    val
-}
-
-pub fn read_long(p: &mut usize, buff: &[u8]) -> usize {
-    let mut val: usize = 0;
-    
-    let mut offset = 0;
-    let x = std::mem::size_of::<usize>();
-
-    for _ in 0..x {
-        val |= (read_byte(p, buff) as usize) << offset;
-        offset += 8;
-    }
-
-    val
 }
 
 pub fn read_uleb(p: &mut usize, buff: &[u8]) -> usize {
@@ -72,6 +51,6 @@ pub fn read_string(p: &mut usize, buff: &mut [u8]) -> Result<String, FromUtf8Err
     let start = *p;
     let end = *p + string_length;
     *p = end;
-    
+
     String::from_utf8(buff[start..end].to_vec())
 }
