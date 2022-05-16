@@ -1,6 +1,6 @@
 [package]
 name = "osr-parser"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2021"
 description = "Library for parsing osu! osr files!"
 license = "MIT"
