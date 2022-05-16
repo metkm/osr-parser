@@ -1,7 +1,7 @@
 //! Simple example
 //! 
 //! ```
-//! let mut replay = Replay::new();
+//! let mut replay = osr_parser::Replay::new();
 //! replay.read("./replay.osr"); // Returns result
 //! ```
 
@@ -103,22 +103,5 @@ impl Replay {
         self.raw = content;
 
         Ok(())
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use std::time::Instant;
-
-    use super::*;
-
-    #[test]
-    fn test_read_replay() {
-        let now = Instant::now();
-
-        let mut replay = Replay::new();
-        replay.read("./replay.osr").unwrap();
-
-        println!("{:?} - {:?}", replay.n300, now.elapsed());
     }
 }
