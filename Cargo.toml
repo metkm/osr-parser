@@ -5,6 +5,9 @@ edition = "2021"
 description = "Library for parsing osu! osr files!"
 license = "MIT"
 
+repository = "https://github.com/sibyl666/osr-parser"
+homepage = "https://github.com/sibyl666/osr-parser"
+
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]

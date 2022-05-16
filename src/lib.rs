@@ -1,3 +1,10 @@
+//! Simple example
+//! 
+//! ```
+//! let mut replay = Replay::new();
+//! replay.read("./replay.osr"); // Returns result
+//! ```
+
 pub mod read;
 
 use read::{read_byte, read_int, read_string};
