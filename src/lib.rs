@@ -12,6 +12,7 @@ use std::{fs, io::Result, mem::transmute};
 
 #[repr(i8)]
 #[derive(Debug)]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Gamemode {
     Standart = 0,
     Taiko = 1,
