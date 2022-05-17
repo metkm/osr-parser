@@ -32,7 +32,8 @@ impl Default for Gamemode {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Default)]
+#[derive(Debug, Default,)]
+#[cfg_attr(feature="serde", derive(Serialize, Deserialize))]
 pub struct Replay {
     pub gamemode: Gamemode,
     pub version: u32,
