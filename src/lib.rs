@@ -91,13 +91,11 @@ impl Replay {
         let life_bar = read_string(p_ref, &mut content).unwrap_or("".to_string());
         let time_stamp = read_int!(usize, p_ref, &content);
         let replay_length = read_int!(u32, p_ref, &content);
-        let replay_data = {
-            let start = *p_ref;
-            *p_ref += self.replay_length as usize;
-            content[start..(replay_length as usize)].to_vec()
-        };
-        let score_id = read_int!(usize, p_ref, &content);
 
+        let replay_data = content[*p_ref..(replay_length as usize)].to_vec();
+        *p_ref += replay_length as usize;
+
+        let score_id = read_int!(usize, p_ref, &content);
         let mod_info: Option<f64> = {
             if *p_ref != content.len() {
                 Some(read_int!(usize, p_ref, &content) as f64)

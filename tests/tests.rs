@@ -5,8 +5,10 @@ pub mod tests {
     #[test]
     fn test_reading() {
         let now = Instant::now();
+
         let mut replay = osr_parser::Replay::new();
-        replay.read("./replay.osr").unwrap();
-        println!("{:?} - {:?}", &replay.life_bar, now.elapsed());
+        replay = replay.read("./replay.osr").unwrap();
+
+        println!("{:?} - {:?}", &replay.replay_data, now.elapsed());
     }
 }
