@@ -33,7 +33,7 @@ impl Default for Gamemode {
 
 #[allow(dead_code)]
 #[derive(Debug, Default,)]
-#[cfg_attr(feature="serde", derive(Serialize, Deserialize))]
+#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Replay {
     pub gamemode: Gamemode,
     pub version: u32,
@@ -70,42 +70,67 @@ impl Replay {
         let mut p = 0;
         let p_ref = &mut p;
 
-        Ok(Self {
-            gamemode: Gamemode::from_byte(read_byte(p_ref, &content)),
-            version: read_int!(u32, p_ref, &content),
-            beatmap_md5: read_string(p_ref, &mut content)
-                .unwrap_or("Can't read beatmap md5!".to_string()),
-            username: read_string(p_ref, &mut content)
-                .unwrap_or("Can't read username!".to_string()),
-            replay_md5: read_string(p_ref, &mut content)
-                .unwrap_or("Can't read replay md5!".to_string()),
-            n300: read_int!(u16, p_ref, &content),
-            n100: read_int!(u16, p_ref, &content),
-            n50: read_int!(u16, p_ref, &content),
-            geki: read_int!(u16, p_ref, &content),
-            katu: read_int!(u16, p_ref, &content),
-            misses: read_int!(u16, p_ref, &content),
-            score: read_int!(u32, p_ref, &content),
-            combo: read_int!(u16, p_ref, &content),
-            perfect: read_byte(p_ref, &content),
-            mods: read_int!(u32, p_ref, &content),
-            life_bar: read_string(p_ref, &mut content).unwrap_or("".to_string()),
-            time_stamp: read_int!(usize, p_ref, &content),
-            replay_length: read_int!(u32, p_ref, &content),
-            replay_data: {
-                let start = *p_ref;
-                *p_ref += self.replay_length as usize;
-                content[start..(self.replay_length as usize)].to_vec()
-            },
-            score_id: read_int!(usize, p_ref, &content),
-            mod_info: {
-                if *p_ref != content.len() {
-                    self.mod_info = Some(read_int!(usize, p_ref, &content) as f64)
-                }
+        let gamemode = Gamemode::from_byte(read_byte(p_ref, &content));
+        let version = read_int!(u32, p_ref, &content);
+        let beatmap_md5 = read_string(p_ref, &mut content)
+            .unwrap_or("Can't read beatmap md5!".to_string());
+        let username = read_string(p_ref, &mut content)
+            .unwrap_or("Can't read username!".to_string());
+        let replay_md5 = read_string(p_ref, &mut content)
+            .unwrap_or("Can't read replay md5!".to_string());
+        let n300 = read_int!(u16, p_ref, &content);
+        let n100 = read_int!(u16, p_ref, &content);
+        let n50 = read_int!(u16, p_ref, &content);
+        let geki = read_int!(u16, p_ref, &content);
+        let katu = read_int!(u16, p_ref, &content);
+        let misses = read_int!(u16, p_ref, &content);
+        let score = read_int!(u32, p_ref, &content);
+        let combo = read_int!(u16, p_ref, &content);
+        let perfect = read_byte(p_ref, &content);
+        let mods = read_int!(u32, p_ref, &content);
+        let life_bar = read_string(p_ref, &mut content).unwrap_or("".to_string());
+        let time_stamp = read_int!(usize, p_ref, &content);
+        let replay_length = read_int!(u32, p_ref, &content);
+        let replay_data = {
+            let start = *p_ref;
+            *p_ref += self.replay_length as usize;
+            content[start..(replay_length as usize)].to_vec()
+        };
+        let score_id = read_int!(usize, p_ref, &content);
 
+        let mod_info: Option<f64> = {
+            if *p_ref != content.len() {
+                Some(read_int!(usize, p_ref, &content) as f64)
+            } else {
                 None
-            },
-            raw: content,
+            }
+        };
+
+        let raw = content;
+
+        Ok(Self {
+            gamemode,
+            version,
+            beatmap_md5,
+            username,
+            replay_md5,
+            n300,
+            n100,
+            n50,
+            geki,
+            katu,
+            misses,
+            score,
+            combo,
+            perfect,
+            mods,
+            life_bar,
+            time_stamp,
+            replay_length,
+            replay_data,
+            score_id,
+            mod_info,
+            raw
         })
     }
 }
