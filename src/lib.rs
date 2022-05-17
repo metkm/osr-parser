@@ -57,7 +57,6 @@ pub struct Replay {
     pub replay_data: Vec<u8>,
     pub score_id: usize,
     pub mod_info: Option<f64>,
-    pub raw: Vec<u8>,
 }
 
 impl Replay {
@@ -107,8 +106,6 @@ impl Replay {
             }
         };
 
-        let raw = content;
-
         Ok(Self {
             gamemode,
             version,
@@ -131,7 +128,6 @@ impl Replay {
             replay_data,
             score_id,
             mod_info,
-            raw
         })
     }
 }
