@@ -1,14 +1,17 @@
 #[cfg(test)]
 pub mod tests {
-    use std::time::Instant;
-
     #[test]
-    fn test_reading() {
-        let now = Instant::now();
+    #[cfg(feature = "lzma")]
+    fn decompress_replay() {
+        use std::io::Read;
 
         let mut replay = osr_parser::Replay::new();
         replay = replay.read("./replay.osr").unwrap();
 
-        println!("{:?} - {:?}", &replay.replay_data, now.elapsed());
+        let mut content = String::new();
+        let mut reader = lzma::Reader::from(&*replay.replay_data).unwrap();
+
+        reader.read_to_string(&mut content);
+        println!("{:?}", &content);
     }
 }

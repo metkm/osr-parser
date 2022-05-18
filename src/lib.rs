@@ -8,11 +8,11 @@
 pub mod read;
 
 use read::{read_byte, read_int, read_string};
-use std::{fs, io::Result, mem::transmute};
+use std::{fs, io::{Result, Read}, mem::transmute};
 
 #[repr(i8)]
 #[derive(Debug)]
-#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub enum Gamemode {
     Standart = 0,
     Taiko = 1,
@@ -33,8 +33,8 @@ impl Default for Gamemode {
 }
 
 #[allow(dead_code)]
-#[derive(Debug, Default,)]
-#[cfg_attr(feature="serde", derive(serde::Serialize, serde::Deserialize))]
+#[derive(Debug, Default)]
+#[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct Replay {
     pub gamemode: Gamemode,
     pub version: u32,
@@ -72,12 +72,12 @@ impl Replay {
 
         let gamemode = Gamemode::from_byte(read_byte(p_ref, &content));
         let version = read_int!(u32, p_ref, &content);
-        let beatmap_md5 = read_string(p_ref, &mut content)
-            .unwrap_or("Can't read beatmap md5!".to_string());
-        let username = read_string(p_ref, &mut content)
-            .unwrap_or("Can't read username!".to_string());
-        let replay_md5 = read_string(p_ref, &mut content)
-            .unwrap_or("Can't read replay md5!".to_string());
+        let beatmap_md5 =
+            read_string(p_ref, &mut content).unwrap_or("Can't read beatmap md5!".to_string());
+        let username =
+            read_string(p_ref, &mut content).unwrap_or("Can't read username!".to_string());
+        let replay_md5 =
+            read_string(p_ref, &mut content).unwrap_or("Can't read replay md5!".to_string());
         let n300 = read_int!(u16, p_ref, &content);
         let n100 = read_int!(u16, p_ref, &content);
         let n50 = read_int!(u16, p_ref, &content);
@@ -127,5 +127,15 @@ impl Replay {
             score_id,
             mod_info,
         })
+    }
+
+    #[cfg(feature = "lzma")]
+    pub fn parse_replay_data(&mut self) -> String {
+
+        let mut content = String::new();
+        let mut reader = lzma::Reader::from(&*self.replay_data).expect("Can't create lzma reader");
+        reader.read_to_string(&mut content);
+        
+        content
     }
 }
