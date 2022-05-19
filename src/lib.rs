@@ -8,7 +8,8 @@
 pub mod read;
 
 use read::{read_byte, read_int, read_string};
-use std::{fs, io::Result, mem::transmute};
+use std::fs;
+use anyhow::{Result, bail};
 
 #[cfg(feature = "lzma")]
 use std::io::Read;
@@ -23,9 +24,17 @@ pub enum Gamemode {
     Mania = 3,
 }
 
-impl Gamemode {
-    fn from_byte(b: u8) -> Gamemode {
-        unsafe { transmute(b) }
+impl TryFrom<u8> for Gamemode {
+    type Error = anyhow::Error;
+
+    fn try_from(value: u8) -> Result<Gamemode> {
+        match value {
+            0 => Ok(Self::Standart),
+            1 => Ok(Self::Taiko),
+            2 => Ok(Self::CatchTheBeat),
+            3 => Ok(Self::Mania),
+            _ => bail!("Failed to parse Gamemode"),
+        }
     }
 }
 
@@ -73,7 +82,7 @@ impl Replay {
         let mut p = 0;
         let p_ref = &mut p;
 
-        let gamemode = Gamemode::from_byte(read_byte(p_ref, &content));
+        let gamemode = Gamemode::try_from(read_byte(p_ref, &content))?;
         let version = read_int!(u32, p_ref, &content);
         let beatmap_md5 =
             read_string(p_ref, &mut content).unwrap_or_else(|_| "Can't read beatmap md5!".to_string());
