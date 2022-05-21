@@ -13,7 +13,7 @@ pub mod tests {
         let mut reader = lzma::Reader::from(&*replay.replay_data).unwrap();
 
         reader.read_to_string(&mut content);
-        // println!("{:?}", &content);
+        println!("{:?}", &replay.username);
 
         Ok(())
     }

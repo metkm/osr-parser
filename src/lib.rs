@@ -82,62 +82,44 @@ impl Replay {
         let mut p = 0;
         let p_ref = &mut p;
 
-        let gamemode = Gamemode::try_from(read_byte(p_ref, &content))?;
-        let version = read_int!(u32, p_ref, &content);
-        let beatmap_md5 =
-            read_string(p_ref, &mut content).unwrap_or_else(|_| "Can't read beatmap md5!".to_string());
-        let username =
-            read_string(p_ref, &mut content).unwrap_or_else(|_| "Can't read username!".to_string());
-        let replay_md5 =
-            read_string(p_ref, &mut content).unwrap_or_else(|_| "Can't read replay md5!".to_string());
-        let n300 = read_int!(u16, p_ref, &content);
-        let n100 = read_int!(u16, p_ref, &content);
-        let n50 = read_int!(u16, p_ref, &content);
-        let geki = read_int!(u16, p_ref, &content);
-        let katu = read_int!(u16, p_ref, &content);
-        let misses = read_int!(u16, p_ref, &content);
-        let score = read_int!(u32, p_ref, &content);
-        let combo = read_int!(u16, p_ref, &content);
-        let perfect = read_byte(p_ref, &content);
-        let mods = read_int!(u32, p_ref, &content);
-        let life_bar = read_string(p_ref, &mut content).unwrap_or_else(|_| "".to_string());
-        let time_stamp = read_int!(usize, p_ref, &content);
-        let replay_length = read_int!(u32, p_ref, &content);
-
-        let replay_data = content[*p_ref..(replay_length as usize)].to_vec();
-        *p_ref += replay_length as usize;
-
-        let score_id = read_int!(usize, p_ref, &content);
-        let mod_info: Option<f64> = {
-            if *p_ref != content.len() {
-                Some(read_int!(usize, p_ref, &content) as f64)
-            } else {
-                None
-            }
-        };
+        let mut _replay_length_temp: u32 = 0;
 
         Ok(Self {
-            gamemode,
-            version,
-            beatmap_md5,
-            username,
-            replay_md5,
-            n300,
-            n100,
-            n50,
-            geki,
-            katu,
-            misses,
-            score,
-            combo,
-            perfect,
-            mods,
-            life_bar,
-            time_stamp,
-            replay_length,
-            replay_data,
-            score_id,
-            mod_info,
+            gamemode: Gamemode::try_from(read_byte(p_ref, &content))?,
+            version: read_int!(u32, p_ref, &content),
+            beatmap_md5: read_string(p_ref, &mut content).unwrap_or_else(|_| "Can't read beatmap md5!".to_string()),
+            username: read_string(p_ref, &mut content).unwrap_or_else(|_| "Can't read username!".to_string()),
+            replay_md5: read_string(p_ref, &mut content).unwrap_or_else(|_| "Can't read replay md5!".to_string()),
+            n300: read_int!(u16, p_ref, &content),
+            n100: read_int!(u16, p_ref, &content),
+            n50: read_int!(u16, p_ref, &content),
+            geki: read_int!(u16, p_ref, &content),
+            katu: read_int!(u16, p_ref, &content),
+            misses: read_int!(u16, p_ref, &content),
+            score: read_int!(u32, p_ref, &content),
+            combo: read_int!(u16, p_ref, &content),
+            perfect: read_byte(p_ref, &content),
+            mods: read_int!(u32, p_ref, &content),
+            life_bar: read_string(p_ref, &mut content).unwrap_or_else(|_| "".to_string()),
+            time_stamp: read_int!(usize, p_ref, &content),
+            replay_length: {  
+                _replay_length_temp = read_int!(u32, p_ref, &content);
+                _replay_length_temp
+            },
+            replay_data: {
+                let start = *p_ref;
+                *p_ref = _replay_length_temp as usize;
+
+                content[start..(_replay_length_temp as usize)].to_vec()
+            },
+            score_id: read_int!(usize, p_ref, &content),
+            mod_info: {
+                if *p_ref != content.len() {
+                    Some(read_int!(usize, p_ref, &content) as f64)
+                } else {
+                    None
+                }
+            },
         })
     }
 
