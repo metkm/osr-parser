@@ -1,5 +1,8 @@
 use std::fs;
 
+#[cfg(feature = "lzma")]
+use std::io::Read;
+
 use super::mode::Gamemode;
 use super::error::ReplayError;
 use super::read::{
@@ -85,8 +88,6 @@ impl Replay {
 
     #[cfg(feature = "lzma")]
     pub fn parse_lzma(&mut self) -> Result<String, lzma::Error> {
-        use std::io::Read;
-
         let mut content = String::new();
         let mut reader = lzma::Reader::from(&*self.replay_data)?;
         reader.read_to_string(&mut content)?;
