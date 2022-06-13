@@ -5,7 +5,7 @@ pub enum ReplayError {
     IoError(io::Error),
 
     #[cfg(feature = "lzma")]
-    LzmaError(lzma::Error)
+    LzmaError(lzma::Error),
 }
 
 impl From<io::Error> for ReplayError {

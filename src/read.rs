@@ -1,9 +1,9 @@
-use std::{string::FromUtf8Error};
+use std::string::FromUtf8Error;
 
 macro_rules! read_int {
     ($t: ty, $p: expr, $buff: expr) => {{
         let size = std::mem::size_of::<$t>();
-        
+
         let mut offset = 0;
         let mut total: $t = 0;
 
@@ -12,7 +12,7 @@ macro_rules! read_int {
             offset += 8;
         }
 
-        total 
+        total
     }};
 }
 

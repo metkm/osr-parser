@@ -1,7 +1,7 @@
 mod error;
 mod mode;
-mod replay;
 mod read;
+mod replay;
 
-pub use replay::Replay;
 pub use error::ReplayError;
+pub use replay::Replay;

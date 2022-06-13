@@ -4,7 +4,7 @@ pub enum Gamemode {
     Standart = 0,
     Taiko = 1,
     CatchTheBeat = 2,
-    Mania = 3
+    Mania = 3,
 }
 
 impl From<u8> for Gamemode {
@@ -14,7 +14,7 @@ impl From<u8> for Gamemode {
             1 => Gamemode::Taiko,
             2 => Gamemode::CatchTheBeat,
             3 => Gamemode::Mania,
-            _ => Gamemode::Standart
+            _ => Gamemode::Standart,
         }
     }
 }
