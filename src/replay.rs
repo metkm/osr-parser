@@ -79,11 +79,21 @@ impl Replay {
     }
 
     #[cfg(feature = "lzma")]
-    pub fn parse_lzma(&mut self) -> Result<String, lzma::Error> {
-        let mut content = String::new();
-        let mut reader = lzma::Reader::from(&*self.replay_data)?;
-        reader.read_to_string(&mut content)?;
+    pub fn parse_lzma(&mut self) -> Result<String, ReplayError> {
+        use std::io::{self, Write};
 
-        Ok(content)
+        let mut reader = lzma::Reader::from(&*self.replay_data)?;
+        let mut buffer = [0u8; 4096];
+        let mut stdout = io::stdout();
+
+        loop {
+            match reader.read(&mut buffer) {
+                Ok(0) => break,
+                Ok(n) => stdout.write_all(&buffer[0..n])?,
+                Err(_) => break
+            }
+        }
+
+        Ok(String::from_utf8(buffer.to_vec())?)
     }
 }
